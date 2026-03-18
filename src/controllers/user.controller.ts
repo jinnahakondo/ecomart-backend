@@ -38,3 +38,23 @@ export const createUser= async(req:Request,res:Response)=>{
     }
 }
 
+// update user controller
+export const updateUser= async(req:Request,res:Response)=>{
+    try {
+        const {id}= req.params; 
+        const updatedUser = req.body;
+        const result = await UserModel.updateOne({_id:id},updatedUser);
+        res.status(200).json({
+            success: true,
+            message: 'User updated successfully',
+            result: result,
+        });
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update user',
+            error: error.message,
+        });
+    }
+};
+
