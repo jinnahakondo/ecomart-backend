@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import UserModel from "../models/UserModel";
 
 // get user controller
 export const getUser=async(req:Request, res:Response)=>{
@@ -19,9 +20,12 @@ export const getUser=async(req:Request, res:Response)=>{
 // create user controller
 export const createUser= async(req:Request,res:Response)=>{
        try {
+        const newUser = req.body;
+     const result= await UserModel.create(newUser);
         res.status(201).json({
             success: true,
             message: 'User created successfully',
+            result: result,
         }); 
     } catch (error: any) {
         res.status(500).json({
