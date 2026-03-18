@@ -12,4 +12,7 @@ router.post('/user',userController.createUser);
 // update users route
 router.patch('/user/:id',userController.updateUser);
 
+//user delete route
+router.delete('/user/:id',userController.deleteUser);
+
 export default router;
