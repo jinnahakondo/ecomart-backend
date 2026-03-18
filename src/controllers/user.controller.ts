@@ -4,9 +4,11 @@ import UserModel from "../models/UserModel";
 // get user controller
 export const getUser=async(req:Request, res:Response)=>{
     try {
+        const user = await UserModel.find();
         res.status(201).json({
             success: true,
             message: 'User got successfully',
+            result: user
         }); 
     } catch (error: any) {
         res.status(500).json({
