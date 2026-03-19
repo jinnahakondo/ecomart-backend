@@ -3,19 +3,25 @@ import ProductModel from "../models/ProductModel";
 
 // get product controller
 export const getProduct = async (req: Request, res: Response) => {
-  const skip = Number(req.query.skip as string) || 10;
-  const limit = Number(req.query.limit as string) || 10;
+  const skip = Number(req.query.skip as string) || 0;
+  const limit = Number(req.query.limit as string) || 30;
   const searchText = req.query.search as string;
+  const category = req.query.category as string;
 
   // query filter
-  const query = searchText
-    ? {
-        title: {
-          $regex: searchText,
-          $options: "i",
-        },
-      }
-    : {};
+  const query: any = {};
+  if (searchText) {
+    query.title = {
+      $regex: searchText,
+      $options: "i",
+    };
+  }
+  if (category) {
+    query.category = {
+      $regex: category,
+      $options: "i",
+    };
+  }
 
   try {
     const products = await ProductModel.find(query).limit(limit).skip(skip);
