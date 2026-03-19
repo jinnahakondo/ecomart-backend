@@ -3,10 +3,23 @@ import ProductModel from "../models/ProductModel";
 
 // get product controller
 export const getProduct = async (req: Request, res: Response) => {
-  const skip = Number(req.query.skip) | 0;
-  const limit = Number(req.query.limit) | 0;
+  const skip = Number(req.query.skip as string) || 10;
+  const limit = Number(req.query.limit as string) || 10;
+  const searchText = req.query.search as string;
+
+  // query filter
+  const query = searchText
+    ? {
+        title: {
+          $regex: searchText,
+          $options: "i",
+        },
+      }
+    : {};
+
   try {
-    const products = await ProductModel.find().limit(limit).skip(skip);
+    const products = await ProductModel.find(query).limit(limit).skip(skip);
+
     res.status(200).json({
       success: true,
       message: "Products retrieved successfully",
