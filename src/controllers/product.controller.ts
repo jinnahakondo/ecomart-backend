@@ -4,8 +4,9 @@ import ProductModel from "../models/ProductModel";
 // get product controller
 export const getProduct = async (req: Request, res: Response) => {
   const skip = Number(req.query.skip as string) || 0;
-  const limit = Number(req.query.limit as string) || 30;
+  const limit = Number(req.query.limit as string) || 0;
   const searchText = req.query.search as string;
+  const rating = req.query.rating as string;
   const category = req.query.category as string;
 
   // query filter
@@ -22,7 +23,11 @@ export const getProduct = async (req: Request, res: Response) => {
       $options: "i",
     };
   }
+  if (rating) {
+    query.rating = { $gte: rating };
+  }
 
+  console.log(query);
   try {
     const products = await ProductModel.find(query).limit(limit).skip(skip);
 
