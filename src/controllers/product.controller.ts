@@ -3,44 +3,53 @@ import ProductModel from "../models/ProductModel";
 
 // get product controller
 export const getProduct = async (req: Request, res: Response) => {
+
   const skip = Number(req.query.skip as string) || 0;
-  const limit = Number(req.query.limit as string) || 0;
+  const limit = Number(req.query.limit as string) || 30;
+
   const searchText = req.query.search as string;
-  const rating = req.query.rating as string;
+  const sort = req.query.sort as string;
   const category = req.query.category as string;
 
-  // query filter
+  // filter
   const query: any = {};
+
   if (searchText) {
-    query.title = {
-      $regex: searchText,
-      $options: "i",
-    };
-  }
-  if (category) {
-    query.category = {
-      $regex: category,
-      $options: "i",
-    };
-  }
-  if (rating) {
-    query.rating = { $gte: rating };
+    query.title = { $regex: searchText, $options: "i" };
   }
 
-  console.log(query);
+  if (category) {
+    query.category = { $regex: category, $options: "i" };
+  }
+
+  // sort option
+  let sortOption: any = {};
+  if (sort === "asc") sortOption.rating = 1;
+  if (sort === "dsc") sortOption.rating = -1;
+
   try {
-    const products = await ProductModel.find(query).limit(limit).skip(skip);
+
+    let mongoQuery = ProductModel.find(query);
+
+    // apply sort only if exists
+    if (sort) {
+      mongoQuery = mongoQuery.sort(sortOption);
+    }
+
+    const products = await mongoQuery
+      .skip(skip)
+      .limit(limit)
 
     res.status(200).json({
       success: true,
       message: "Products retrieved successfully",
       result: products,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Error retrieving products",
-      result: null,
     });
   }
 };
