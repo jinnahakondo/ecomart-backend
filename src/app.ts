@@ -13,6 +13,7 @@ app.use(cors());
 // Application routes
 // user routes 
 app.use('/api/v1/users', userRoutes);
+// product routes
 app.use('/api/v1/products',productRoutes );
 
 // Testing route
