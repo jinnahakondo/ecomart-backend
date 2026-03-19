@@ -9,19 +9,9 @@ interface IReviews{
         reviewerEmail:string;
     }
 
-    // dimensions interface
-    interface IDimensions{
-        width?:number,
-        height?:number,
-        depth?:number,
-    };
-
     // product meta interface
     interface IProductMeta{
     createdAt:Date,
-    updatedAt:Date,
-    barcode:number,
-    qrCode:string,
 }
 
 // main product interface
@@ -35,21 +25,18 @@ interface IProduct{
     stock:number,
     tags?:string[],
     brand:string,
-    sku:string,
     weight?:number,
-    dimensions?:IDimensions,
     warrantyInformation?:string,
     shippingInformation?:string,
     availabilityStatus?:string,
     reviews?:IReviews[],
     returnPolicy?:string,
-    minimumOrderQuantity?:number,
     meta?:IProductMeta,
     images?:string[],
     thumbnail?:string,
 }   
 
-const ProductModel = new mongoose.Schema<IProduct>({
+const ProductSchema = new mongoose.Schema<IProduct>({
 title:{type:String,required:true},
 description:{type:String,required:true},
 category:{type:String,required:true},
@@ -58,14 +45,8 @@ discountPercentage:{type:Number,required:true},
 rating:{type:Number},
 stock:{type:Number,required:true},
 tags:{type:[String]},
-brand:{type:String,required:true},
-sku:{type:String,required:true},    
+brand:{type:String,required:true},    
 weight:{type:Number},
-dimensions:{
-    width:{type:Number},
-    height:{type:Number},
-    depth:{type:Number}
-},
 warrantyInformation:{type:String},
 shippingInformation:{type:String},
 availabilityStatus:{type:String},
@@ -79,12 +60,9 @@ reviews:[
     }
 ],
 returnPolicy:{type:String},
-minimumOrderQuantity:{type:Number},
 meta:{
     createdAt:{type:Date,default:Date.now},
     updatedAt:{type:Date,default:Date.now},
-    barcode:{type:Number},
-    qrCode:{type:String},
 },
 images:{
     type:[String]
@@ -92,6 +70,6 @@ images:{
 thumbnail:{type:String}
 })
 
-const product = mongoose.models.Product || mongoose.model<IProduct>('Product',ProductModel);
+const ProductModel  = mongoose.models.Service || mongoose.model<IProduct>('Service',ProductSchema);
 
-export default product; 
+export default ProductModel; 

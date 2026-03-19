@@ -4,15 +4,15 @@ import *as userController from '../controllers/user.controller';
 const router = Router();
 
 // get users route
-router.get('/user',userController.getUser); 
+router.get('/',userController.getUser); 
 
 // create users route
-router.post('/user',userController.createUser); 
+router.post('/',userController.createUser); 
 
 // update users route
-router.patch('/user/:id',userController.updateUser);
+router.patch('/:id',userController.updateUser);
 
 //user delete route
-router.delete('/user/:id',userController.deleteUser);
+router.delete('/:id',userController.deleteUser);
 
 export default router;
