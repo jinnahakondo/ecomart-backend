@@ -9,11 +9,6 @@ interface IReviews{
         reviewerEmail:string;
     }
 
-    // product meta interface
-    interface IProductMeta{
-    createdAt:Date,
-}
-
 // main product interface
 interface IProduct{
     title:string,
@@ -27,13 +22,13 @@ interface IProduct{
     brand:string,
     weight?:number,
     warrantyInformation?:string,
-    shippingInformation?:string,
     availabilityStatus?:string,
     reviews?:IReviews[],
     returnPolicy?:string,
-    meta?:IProductMeta,
     images?:string[],
     thumbnail?:string,
+    createdAt:Date,
+    updatedAt:Date,
 }   
 
 const ProductSchema = new mongoose.Schema<IProduct>({
@@ -48,7 +43,6 @@ tags:{type:[String]},
 brand:{type:String,required:true},    
 weight:{type:Number},
 warrantyInformation:{type:String},
-shippingInformation:{type:String},
 availabilityStatus:{type:String},
 reviews:[
     {
@@ -60,15 +54,11 @@ reviews:[
     }
 ],
 returnPolicy:{type:String},
-meta:{
-    createdAt:{type:Date,default:Date.now},
-    updatedAt:{type:Date,default:Date.now},
-},
 images:{
     type:[String]
 },
 thumbnail:{type:String}
-})
+},{timestamps:true,})
 
 const ProductModel  = mongoose.models.Service || mongoose.model<IProduct>('Service',ProductSchema);
 
