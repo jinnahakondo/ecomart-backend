@@ -12,7 +12,7 @@ router.get("/:id", orderController.getSingleOrder);
 //get order for a user route
 router.get("/user/:userId", orderController.getOrderForAUser);
 
-// create order r/oute
+// create order route
 router.post("/", orderController.createOrder);
 
 // update order route

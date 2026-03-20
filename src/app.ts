@@ -4,6 +4,7 @@ import userRoutes from "./routes/user.route";
 import productRoutes from "./routes/product.route";
 import reviewRoutes from "./routes/review.route";
 import orderRoutes from "./routes/order.route";
+import statsRoutes from "./routes/dashoard.stats.route";
 const port = 3000;
 
 const app: Application = express();
@@ -25,6 +26,9 @@ app.use("/api/orders", orderRoutes);
 
 // review routes
 app.use("/api/reviews", reviewRoutes);
+
+// review routes
+app.use("/api/stats", statsRoutes);
 
 // Testing route
 app.get("/", (req: Request, res: Response) => {
