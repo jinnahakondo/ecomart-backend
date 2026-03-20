@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 // reviews interface 
-interface IReviews{
+interface IReview{
         rating:number;
         comment:string;
         date:Date;
@@ -23,7 +23,7 @@ interface IProduct{
     weight?:number,
     warrantyInformation?:string,
     availabilityStatus?:string,
-    reviews?:IReviews[],
+    reviews?:IReview[],
     returnPolicy?:string,
     images?:string[],
     thumbnail?:string,

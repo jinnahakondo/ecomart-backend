@@ -20,8 +20,16 @@ interface IOrder {
 
 const OrderSchema = new mongoose.Schema<IOrder>(
   {
-    userId: mongoose.Schema.Types.ObjectId,
-    productId: mongoose.Schema.Types.ObjectId,
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
+    },
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "product",
+      required: true,
+    },
     quantity: {
       type: Number,
       required: true,
@@ -35,14 +43,14 @@ const OrderSchema = new mongoose.Schema<IOrder>(
       enum: ["pending", "confirmed", "cancelled"],
       default: "pending",
     },
-    address: {
-      fullName: String,
-      phone: String,
-      country: String,
-      city: String,
-      area: String,
-      postalCode: String,
-    },
+   address: {
+  fullName: { type: String, required: true },
+  phone: { type: String, required: true },
+  country: { type: String, required: true },
+  city: { type: String, required: true },
+  area: { type: String, required: true },
+  postalCode: { type: String, required: true },
+},
   },
   { timestamps: true },
 );

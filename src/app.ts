@@ -3,6 +3,7 @@ import express, { Application, Request, Response } from "express";
 import userRoutes from "./routes/user.route";
 import productRoutes from "./routes/product.route";
 import reviewRoutes from "./routes/review.route";
+import orderRoutes from "./routes/order.route";
 const port = 3000;
 
 const app: Application = express();
@@ -12,10 +13,16 @@ app.use(express.json());
 app.use(cors());
 
 // Application routes
+
 // user routes
 app.use("/api/users", userRoutes);
+
 // product routes
 app.use("/api/products", productRoutes);
+
+// order routes
+app.use("/api/orders", orderRoutes);
+
 // review routes
 app.use("/api/reviews", reviewRoutes);
 
