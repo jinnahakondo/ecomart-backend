@@ -1,8 +1,9 @@
-import cors from 'cors';
-import express, { Application, Request, Response,  } from 'express';
-import userRoutes from './routes/user.route';
-import productRoutes from './routes/product.route';
-const port = 3000
+import cors from "cors";
+import express, { Application, Request, Response } from "express";
+import userRoutes from "./routes/user.route";
+import productRoutes from "./routes/product.route";
+import reviewRoutes from "./routes/review.route";
+const port = 3000;
 
 const app: Application = express();
 
@@ -11,23 +12,24 @@ app.use(express.json());
 app.use(cors());
 
 // Application routes
-// user routes 
-app.use('/api/v1/users', userRoutes);
+// user routes
+app.use("/api/users", userRoutes);
 // product routes
-app.use('/api/v1/products',productRoutes );
+app.use("/api/products", productRoutes);
+// review routes
+app.use("/api/reviews", reviewRoutes);
 
 // Testing route
-app.get('/', (req: Request, res: Response) => {
-  res.send('Ecomart Server is running!');
+app.get("/", (req: Request, res: Response) => {
+  res.send("Ecomart Server is running!");
 });
 
 // Not found route
 app.use((req: Request, res: Response) => {
   res.status(404).json({
     success: false,
-    message: 'Route not found',
+    message: "Route not found",
   });
 });
-
 
 export default app;

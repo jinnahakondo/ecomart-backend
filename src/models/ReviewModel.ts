@@ -23,7 +23,7 @@ const ReviewSchema = new mongoose.Schema<IReview>(
     image: String,
     comment: {
       type: String,
-      requiredPaths: true,
+      required: true,
     },
   },
   { timestamps: true },
