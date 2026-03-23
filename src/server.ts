@@ -11,7 +11,7 @@ async function main() {
 
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB successfully');
-
+ 
     app.listen(process.env.PORT, () => {
       console.log(`Server is listening on port ${process.env.PORT}`);
     });
@@ -22,3 +22,5 @@ async function main() {
 }
 
 main();
+
+export default app;
