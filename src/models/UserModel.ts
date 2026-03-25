@@ -50,14 +50,15 @@ const UserSchema = new mongoose.Schema<IUser>(
   { timestamps: true },
 );
 
-// pre middleware for has password 
+// pre middleware for has password
 UserSchema.pre("save", async function () {
   try {
     if (this.isModified("password")) {
-      await bcrypt.hash(this.password, 10);
+      const hasedPassword = await bcrypt.hash(this.password, 10);
+      this.password = hasedPassword;
     }
-  } catch (error:any) {
-throw new Error(error.message)
+  } catch (error: any) {
+    throw new Error(error.message);
   }
 });
 
