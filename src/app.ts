@@ -6,6 +6,7 @@ import reviewRoutes from "./routes/review.route";
 import orderRoutes from "./routes/order.route";
 import statsRoutes from "./routes/dashoard.stats.route";
 import chartDataRoutes from "./routes/chart.data.route";
+import getCategoryRoute from "./routes/category.route";
 const port = process.env.PORT;
 
 const app: Application = express();
@@ -33,6 +34,9 @@ app.use("/api/stats", statsRoutes);
 
 //chart data routes
 app.use("/api/dashboard/chart-data", chartDataRoutes);
+
+//get all category routes
+app.use("/api/categories", getCategoryRoute);
 
 // Testing route
 app.get("/", (req: Request, res: Response) => {
