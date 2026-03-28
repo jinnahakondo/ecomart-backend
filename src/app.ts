@@ -19,7 +19,12 @@ app.use(
     credentials: true,
   }),
 );
-app.options("*", cors());
+
+app.options("*", cors({
+  origin: "http://localhost:3000",
+  credentials: true,
+}));
+
 app.use(express.json());
 
 // Application routes
