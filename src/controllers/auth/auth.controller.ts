@@ -43,7 +43,7 @@ export const loginUser = async (req: Request, res: Response) => {
     const token = jwt.sign(payload, jwtSecrect);
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "none",
     });
   } catch (error: any) {
