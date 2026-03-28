@@ -62,25 +62,6 @@ export const getSingleUserWithEmail = async (req: Request, res: Response) => {
   }
 };
 
-// create user
-export const createUser = async (req: Request, res: Response) => {
-  try {
-    const newUser = req.body;
-    const result = await UserModel.create(newUser);
-    res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      result: result,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to create user",
-      error: error.message,
-    });
-  }
-};
-
 // update user
 export const updateUser = async (req: Request, res: Response) => {
   try {

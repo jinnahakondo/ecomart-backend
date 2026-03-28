@@ -10,9 +10,6 @@ router.get("/", userController.getUser);
 router.get("/:id", userController.getSingleUser);
 router.get("/email/:email", userController.getSingleUserWithEmail);
 
-// create users
-router.post("/", userController.createUser);
-
 // update users
 router.patch("/:id", userController.updateUser);
 

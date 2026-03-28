@@ -7,6 +7,7 @@ import orderRoutes from "./routes/order.route";
 import statsRoutes from "./routes/dashoard.stats.route";
 import chartDataRoutes from "./routes/chart.data.route";
 import getCategoryRoute from "./routes/category.route";
+import authRoute from "./routes/auth/auth.route";
 const port = process.env.PORT;
 
 const app: Application = express();
@@ -16,6 +17,9 @@ app.use(express.json());
 app.use(cors());
 
 // Application routes
+// auth routes
+// login
+app.use("/api/auth", authRoute);
 
 // user routes
 app.use("/api/users", userRoutes);
