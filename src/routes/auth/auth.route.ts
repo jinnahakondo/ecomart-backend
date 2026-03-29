@@ -8,4 +8,7 @@ router.post("/register", authController.createUser);
 // login user
 router.post("/login", authController.loginUser);
 
+//getAuthenticated user info
+router.get("/me", authController.getAuthenticateUserInfo);
+
 export default router;

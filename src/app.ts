@@ -8,6 +8,7 @@ import statsRoutes from "./routes/dashoard.stats.route";
 import chartDataRoutes from "./routes/chart.data.route";
 import getCategoryRoute from "./routes/category.route";
 import authRoute from "./routes/auth/auth.route";
+import cookieParser from "cookie-parser";
 const port = process.env.PORT;
 
 const app: Application = express();
@@ -23,6 +24,8 @@ app.use(
   }),
 );
 
+//cookie parser
+app.use(cookieParser());
 
 app.use(express.json());
 

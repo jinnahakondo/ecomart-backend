@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import UserModel from "../../models/UserModel";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 const jwtSecrect: string = process.env.JWT_SECRECT!;
 
 //create user
@@ -39,7 +39,7 @@ export const loginUser = async (req: Request, res: Response) => {
       throw new Error("invalid passwod");
     }
 
-    const token = jwt.sign(JSON.stringify(user._id), jwtSecrect);
+    const token = jwt.sign(JSON.stringify({ _id: user._id }), jwtSecrect);
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -49,5 +49,39 @@ export const loginUser = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     res.status(500).send({ message: error?.message });
+  }
+};
+
+//get verifyed user info
+export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
+  const token = req.cookies.token;
+
+  const decodedToken = jwt.verify(token, jwtSecrect!) as JwtPayload;
+
+  if(!decodedToken?._id){
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized access",
+    });
+  }
+
+  const id = decodedToken._id;
+
+  try {
+    const user = await UserModel.findOne({ _id: id }).select("-password");
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    res.status(200).json({
+      success: true,
+      user: user,
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch user info",
+    });
   }
 };
