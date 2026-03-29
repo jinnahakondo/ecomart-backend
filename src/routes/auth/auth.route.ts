@@ -11,4 +11,7 @@ router.post("/login", authController.loginUser);
 //getAuthenticated user info
 router.get("/me", authController.getAuthenticateUserInfo);
 
+// logout user
+router.post("/logout", authController.logoutUser);
+
 export default router;

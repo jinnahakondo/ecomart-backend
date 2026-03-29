@@ -58,7 +58,7 @@ export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
 
   const decodedToken = jwt.verify(token, jwtSecrect!) as JwtPayload;
 
-  if(!decodedToken?._id){
+  if (!decodedToken?._id) {
     return res.status(401).json({
       success: false,
       message: "Unauthorized access",
@@ -77,11 +77,21 @@ export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
       success: true,
       user: user,
     });
-    
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch user info",
     });
   }
+};
+
+//logout user
+export const logoutUser = async (req: Request, res: Response) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+  });
+  res.status(200).json({
+    success: true,
+    message: "User logged out successfully",
+  });
 };
