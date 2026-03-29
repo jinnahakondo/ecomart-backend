@@ -18,26 +18,12 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://ecomart-frontend-three.vercel.app/",
+      "https://ecomart-frontend-three.vercel.app",
     ],
     credentials: true,
   }),
 );
 
-const corsOptions = {
-  origin: "https://ecomart-frontend-three.vercel.app", // Explicitly allow your frontend origin
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allow necessary methods
-  allowedHeaders: ["Content-Type", "Authorization"], // Allow necessary headers
-  credentials: true, // If you are using cookies or authorization headers
-};
-
-app.use(cors(corsOptions));
-
-// Handle preflight requests explicitly for all routes (important for non-simple requests)
-app.options('/{*splat}', cors(corsOptions));
-
-//cookie parser
-app.use(cookieParser());
 
 app.use(express.json());
 
