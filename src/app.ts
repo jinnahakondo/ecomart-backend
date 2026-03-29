@@ -15,15 +15,14 @@ const app: Application = express();
 // Parsers
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "https://ecomart-frontend-three.vercel.app/",
+    ],
     credentials: true,
   }),
 );
 
-app.options("*", cors({
-  origin: "http://localhost:3000",
-  credentials: true,
-}));
 
 app.use(express.json());
 

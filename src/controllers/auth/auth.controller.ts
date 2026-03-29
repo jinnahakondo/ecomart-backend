@@ -35,16 +35,17 @@ export const loginUser = async (req: Request, res: Response) => {
 
     //check password
     const isPasswordOk = await bcrypt.compare(payload.password, user.password);
-
     if (!isPasswordOk) {
       throw new Error("invalid passwod");
     }
 
-    const token = jwt.sign(payload, jwtSecrect);
+    const token = jwt.sign(JSON.stringify(user._id), jwtSecrect);
+
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+    });
+    res.status(200).json({
+      success: true,
     });
   } catch (error: any) {
     res.status(500).send({ message: error?.message });
