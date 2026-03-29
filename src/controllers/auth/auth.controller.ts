@@ -67,10 +67,13 @@ export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
     }
 
     const id = decodedToken._id;
-    
+
     const user = await UserModel.findOne({ _id: id }).select("-password");
     if (!user) {
-      throw new Error("User not found");
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
     res.status(200).json({
