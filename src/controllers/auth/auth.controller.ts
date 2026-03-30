@@ -67,13 +67,9 @@ export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
     }
 
     const id = decodedToken._id;
-
     const user = await UserModel.findOne({ _id: id }).select("-password");
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      throw new Error("User not found");
     }
 
     res.status(200).json({
@@ -89,12 +85,20 @@ export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
 };
 
 //logout user
-export const logoutUser = async (req: Request, res: Response) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-  });
-  res.status(200).json({
-    success: true,
-    message: "User logged out successfully",
-  });
+export const logOutUser = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      path: "/",
+    });
+    res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to log out user",
+    });
+  }
 };
