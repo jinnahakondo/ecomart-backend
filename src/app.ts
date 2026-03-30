@@ -18,7 +18,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://ecomart-frontend-three.vercel.app/",
+      "https://ecomart-frontend-three.vercel.app",
     ],
     credentials: true,
   }),

@@ -54,20 +54,19 @@ export const loginUser = async (req: Request, res: Response) => {
 
 //get verifyed user info
 export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
-  const token = req.cookies.token;
-
-  const decodedToken = jwt.verify(token, jwtSecrect!) as JwtPayload;
-
-  if(!decodedToken?._id){
-    return res.status(401).json({
-      success: false,
-      message: "Unauthorized access",
-    });
-  }
-
-  const id = decodedToken._id;
-
   try {
+    const token = req.cookies.token;
+
+    const decodedToken = jwt.verify(token, jwtSecrect!) as JwtPayload;
+
+    if (!decodedToken?._id) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access",
+      });
+    }
+
+    const id = decodedToken._id;
     const user = await UserModel.findOne({ _id: id }).select("-password");
     if (!user) {
       throw new Error("User not found");
@@ -77,11 +76,29 @@ export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
       success: true,
       user: user,
     });
-    
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch user info",
+    });
+  }
+};
+
+//logout user
+export const logOutUser = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      path: "/",
+    });
+    res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to log out user",
     });
   }
 };
