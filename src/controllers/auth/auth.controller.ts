@@ -39,10 +39,13 @@ export const loginUser = async (req: Request, res: Response) => {
       throw new Error("invalid passwod");
     }
 
-    const token = jwt.sign(JSON.stringify({ _id: user._id }), jwtSecrect);
+    const token = jwt.sign({ _id: user._id }, jwtSecrect);
 
     res.cookie("token", token, {
       httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
     });
     res.status(200).json({
       success: true,
