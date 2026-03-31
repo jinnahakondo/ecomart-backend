@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 
 // Review document structure
 interface IReview {
-  name: string;
+  reviewerName: string;
   email: string;
-  image?: string;
+  avatar?: string;
   rating: number;
   comment: string;
   createdAt: Date;
@@ -14,7 +14,7 @@ interface IReview {
 // Review Schema - stores user feedback
 const ReviewSchema = new mongoose.Schema<IReview>(
   {
-    name: {
+    reviewerName: {
       type: String,
       required: true,
     },
@@ -22,7 +22,7 @@ const ReviewSchema = new mongoose.Schema<IReview>(
       type: String,
       required: true,
     },
-    image: String,
+    avatar: String,
     rating: {
       type: Number,
       required: true,
@@ -34,7 +34,7 @@ const ReviewSchema = new mongoose.Schema<IReview>(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const ReviewModel =
