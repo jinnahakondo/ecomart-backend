@@ -44,7 +44,12 @@ export const loginUser = async (req: Request, res: Response) => {
       path: "/",
     });
 
-    res.status(200).json({ success: true });
+    res
+      .status(200)
+      .json({
+        success: true,
+        user: { name: user.name, avatar: user.avatar, role: user.role },
+      });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error?.message });
   }
@@ -55,12 +60,16 @@ export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
   try {
     const token = req.cookies.token;
     if (!token)
-      return res.status(401).json({ success: false, message: "No token provided" });
+      return res
+        .status(401)
+        .json({ success: false, message: "No token provided" });
 
     const decodedToken = jwt.verify(token, jwtSecret) as JwtPayload;
 
     if (!decodedToken?._id)
-      return res.status(401).json({ success: false, message: "Unauthorized access" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Unauthorized access" });
 
     const user = await UserModel.findById(decodedToken._id).select("-password");
     if (!user) throw new Error("User not found");
@@ -85,7 +94,9 @@ export const logOutUser = async (req: Request, res: Response) => {
       path: "/",
     });
 
-    res.status(200).json({ success: true, message: "User logged out successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "User logged out successfully" });
   } catch (error: any) {
     res.status(500).json({
       success: false,
