@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 
 // Review document structure
 interface IReview {
+  userId: mongoose.Types.ObjectId;
+  productId: mongoose.Types.ObjectId;
   reviewerName: string;
   email: string;
   avatar?: string;
@@ -12,6 +14,16 @@ interface IReview {
 
 // Review Schema - stores user feedback
 const ReviewSchema = new mongoose.Schema<IReview>({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "product",
+    required: true,
+  },
   reviewerName: {
     type: String,
     required: true,
