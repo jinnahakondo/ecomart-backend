@@ -24,8 +24,9 @@ app.use(
   }),
 );
 
+// cookie parser
+app.use(cookieParser());
 
-app.use(express.json());
 
 // Application routes
 // auth routes

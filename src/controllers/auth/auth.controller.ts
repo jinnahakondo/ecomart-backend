@@ -79,10 +79,11 @@ export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
       success: true,
       user: user,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch user info",
+      error: error?.message,
     });
   }
 };
