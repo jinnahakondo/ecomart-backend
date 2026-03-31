@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 
 export interface IUser {
-  name: string;
+  reviewerName: string;
   email: string;
   password: string;
   avatar?: string;
@@ -14,7 +14,7 @@ export interface IUser {
 
 const UserSchema = new mongoose.Schema<IUser>(
   {
-    name: {
+    reviewerName: {
       type: String,
       required: true,
     },
