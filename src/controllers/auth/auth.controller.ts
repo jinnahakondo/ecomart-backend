@@ -44,12 +44,10 @@ export const loginUser = async (req: Request, res: Response) => {
       path: "/",
     });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        user: { name: user.name, avatar: user.avatar, role: user.role },
-      });
+    res.status(200).json({
+      success: true,
+      user: { name: user.name, avatar: user.avatar, role: user.role },
+    });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error?.message });
   }
@@ -57,6 +55,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
 // Get authenticated user info
 export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
+
   try {
     const token = req.cookies.token;
     if (!token)
@@ -89,8 +88,8 @@ export const logOutUser = async (req: Request, res: Response) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: true,
+      sameSite: "none",
       path: "/",
     });
 
