@@ -1,5 +1,9 @@
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
+import cookieParser from "cookie-parser";
+
+// Routes
+import authRoute from "./routes/auth/auth.route";
 import userRoutes from "./routes/user.route";
 import productRoutes from "./routes/product.route";
 import reviewRoutes from "./routes/review.route";
@@ -7,60 +11,72 @@ import orderRoutes from "./routes/order.route";
 import statsRoutes from "./routes/dashoard.stats.route";
 import chartDataRoutes from "./routes/chart.data.route";
 import getCategoryRoute from "./routes/category.route";
-import authRoute from "./routes/auth/auth.route";
-import cookieParser from "cookie-parser";
-const port = process.env.PORT;
 
 const app: Application = express();
+const port = process.env.PORT || 5000;
 
-// Parsers
+// -------------------
+// Middleware
+// -------------------
+
+// CORS - credentials true required for cookie sharing
 app.use(
   cors({
     origin: [
-      "http://localhost:3000",
-      "https://ecomart-frontend-three.vercel.app",
+      "http://localhost:3000", // dev
+      "https://ecomart-frontend-three.vercel.app", // production
     ],
     credentials: true,
-  }),
+  })
 );
 
-// cookie parser
+// cookie parser to read req.cookies
 app.use(cookieParser());
 
+// JSON parser for POST requests
 app.use(express.json());
 
-// Application routes
-// auth routes
-// login
+// URL encoded parser if needed
+app.use(express.urlencoded({ extended: true }));
+
+// -------------------
+// Routes
+// -------------------
+
+// Auth routes (login, register, logout, me)
 app.use("/api/auth", authRoute);
 
-// user routes
+// User routes (CRUD, profile)
 app.use("/api/users", userRoutes);
 
-// product routes
+// Product routes
 app.use("/api/products", productRoutes);
 
-// order routes
+// Order routes
 app.use("/api/orders", orderRoutes);
 
-// review routes
+// Review routes
 app.use("/api/reviews", reviewRoutes);
 
-// review routes
+// Dashboard stats
 app.use("/api/stats", statsRoutes);
 
-//chart data routes
+// Chart data
 app.use("/api/dashboard/chart-data", chartDataRoutes);
 
-//get all category routes
+// Categories
 app.use("/api/categories", getCategoryRoute);
 
-// Testing route
+// -------------------
+// Test route
+// -------------------
 app.get("/", (req: Request, res: Response) => {
   res.send("Ecomart Server is running!");
 });
 
-// Not found route
+// -------------------
+// 404 Not Found handler
+// -------------------
 app.use((req: Request, res: Response) => {
   res.status(404).json({
     success: false,
