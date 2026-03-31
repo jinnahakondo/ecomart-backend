@@ -1,77 +1,71 @@
 import { Request, Response } from "express";
 import ProductModel from "../models/ProductModel";
 
-// get product controller
+// get all products with optional filters, pagination, sorting
 export const getProduct = async (req: Request, res: Response) => {
-
   const skip = Number(req.query.skip as string) || 0;
   const limit = Number(req.query.limit as string) || 30;
-
   const searchText = req.query.search as string;
   const sort = req.query.sort as string;
   const category = req.query.category as string;
 
-  // filter
   const query: any = {};
 
-  if (searchText) {
-    query.title = { $regex: searchText, $options: "i" };
-  }
+  if (searchText) query.title = { $regex: searchText, $options: "i" };
+  if (category) query.category = { $regex: category, $options: "i" };
 
-  if (category) {
-    query.category = { $regex: category, $options: "i" };
-  }
-
-  // sort option
   let sortOption: any = {};
   if (sort === "asc") sortOption.rating = 1;
   if (sort === "dsc") sortOption.rating = -1;
 
   try {
-
     let mongoQuery = ProductModel.find(query);
 
-    // apply sort only if exists
-    if (sort) {
-      mongoQuery = mongoQuery.sort(sortOption);
-    }
+    if (sort) mongoQuery = mongoQuery.sort(sortOption);
 
-    const products = await mongoQuery
-      .skip(skip)
-      .limit(limit)
+    const products = await mongoQuery.skip(skip).limit(limit);
 
     res.status(200).json({
       success: true,
       message: "Products retrieved successfully",
       result: products,
     });
-
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Error retrieving products",
+      error: error.message,
     });
   }
 };
 
-// get single product controller
+// get single product by ID
 export const getSingleProduct = async (req: Request, res: Response) => {
   const { serviceId } = req.params;
   try {
-    const product = await ProductModel.findOne({ _id: serviceId });
-    if (product) {
-      res.status(200).json({
-        product,
-      });
-    } else {
-      res.status(404).json({
+    const product = await ProductModel.findById(serviceId);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
         message: "Product not found",
       });
     }
-  } catch (error) {}
+
+    res.status(200).json({
+      success: true,
+      message: "Product fetched successfully",
+      result: product,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch product",
+      error: error.message,
+    });
+  }
 };
 
-// create product controller
+// create a new product
 export const createProduct = async (req: Request, res: Response) => {
   try {
     const newProduct = req.body;
@@ -79,7 +73,7 @@ export const createProduct = async (req: Request, res: Response) => {
     res.status(201).json({
       success: true,
       message: "Product created successfully",
-      result: result,
+      result,
     });
   } catch (error: any) {
     res.status(500).json({
@@ -93,31 +87,39 @@ export const createProduct = async (req: Request, res: Response) => {
 // update a product
 export const updateProduct = async (req: Request, res: Response) => {
   const { serviceId } = req.params;
-  const update = req.body;
+  const updateData = req.body;
   try {
-    const result = await ProductModel.updateOne({ _id: serviceId }, update);
-    res.status(201).json({
+    const result = await ProductModel.updateOne({ _id: serviceId }, updateData);
+    res.status(200).json({
       success: true,
-      message: "product updated successfully",
+      message: "Product updated successfully",
       result,
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to update product",
+      error: error.message,
     });
   }
 };
 
-//delete a product
+// delete a product
 export const deleteAProduct = async (req: Request, res: Response) => {
+  const { serviceId } = req.params;
   try {
-    const { serviceId } = req.params;
     const result = await ProductModel.deleteOne({ _id: serviceId });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
     res.status(200).json({
       success: true,
-      message: "product deleted successfully",
-      result: result,
+      message: "Product deleted successfully",
+      result,
     });
   } catch (error: any) {
     res.status(500).json({

@@ -1,80 +1,85 @@
 import { Request, Response } from "express";
 import OrderModel from "../models/OrderModel";
 
-// get order controller
+// get all orders
 export const getOrder = async (req: Request, res: Response) => {
   try {
     const orders = await OrderModel.find();
-    res.status(201).json({
+    res.status(200).json({
       success: true,
-      message: "orders got successfully",
+      message: "Orders retrieved successfully",
       result: orders,
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: "Failed to get orders",
+      message: "Failed to retrieve orders",
       error: error.message,
     });
   }
 };
 
-// get single order controller
+// get single order by ID
 export const getSingleOrder = async (req: Request, res: Response) => {
-  const id = req.params.id;
+  const { id } = req.params;
   try {
-    const Order = await OrderModel.findOne({ _id: id });
-    if (Order) {
-      res.status(200).json({
-        Order,
-      });
-    } else {
-      res.status(404).json({
+    const order = await OrderModel.findById(id);
+    if (!order) {
+      return res.status(404).json({
         success: false,
-        message: "order not found",
+        message: "Order not found",
       });
     }
-  } catch (error) {
+
+    res.status(200).json({
+      success: true,
+      message: "Order retrieved successfully",
+      result: order,
+    });
+  } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: "Failed to get order",
+      message: "Failed to retrieve order",
+      error: error.message,
     });
   }
 };
 
-// get order for a user controller
+// get orders for a specific user
 export const getOrderForAUser = async (req: Request, res: Response) => {
-  const userId = req.params.userId;
-  console.log(userId)
+  const { userId } = req.params;
   try {
-    const Order = await OrderModel.find({ userId });
-    if (Order) {
-      res.status(200).json({
-        Order,
-      });
-    } else {
-      res.status(404).json({
+    const orders = await OrderModel.find({ userId });
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({
         success: false,
-        message: "order not found",
+        message: "No orders found for this user",
       });
     }
-  } catch (error) {
+
+    res.status(200).json({
+      success: true,
+      message: "User orders retrieved successfully",
+      result: orders,
+    });
+  } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: "Failed to get order",
+      message: "Failed to retrieve user orders",
+      error: error.message,
     });
   }
 };
 
-// create order controller
+// create a new order
 export const createOrder = async (req: Request, res: Response) => {
   try {
     const newOrder = req.body;
     const result = await OrderModel.create(newOrder);
     res.status(201).json({
       success: true,
-      message: "order created successfully",
-      result: result,
+      message: "Order created successfully",
+      result,
     });
   } catch (error: any) {
     res.status(500).json({
@@ -85,16 +90,16 @@ export const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-// update order controller
+// update an order
 export const updateOrder = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const updateData = req.body;
   try {
-    const { id } = req.params;
-    const updatedOrder = req.body;
-    const result = await OrderModel.updateOne({ _id: id }, updatedOrder);
+    const result = await OrderModel.updateOne({ _id: id }, updateData);
     res.status(200).json({
       success: true,
-      message: "order updated successfully",
-      result: result,
+      message: "Order updated successfully",
+      result,
     });
   } catch (error: any) {
     res.status(500).json({
@@ -105,15 +110,22 @@ export const updateOrder = async (req: Request, res: Response) => {
   }
 };
 
-// delete order controller
+// delete an order
 export const deleteOrder = async (req: Request, res: Response) => {
+  const { id } = req.params;
   try {
-    const { id } = req.params;
     const result = await OrderModel.deleteOne({ _id: id });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
     res.status(200).json({
       success: true,
-      message: "order deleted successfully",
-      result: result,
+      message: "Order deleted successfully",
+      result,
     });
   } catch (error: any) {
     res.status(500).json({

@@ -2,34 +2,35 @@ import { Request, Response } from "express";
 import UserModel from "../models/UserModel";
 import ProductModel from "../models/ProductModel";
 import OrderModel from "../models/OrderModel";
+
 export const getStats = async (req: Request, res: Response) => {
   try {
     const totalUsers = await UserModel.countDocuments();
     const totalProducts = await ProductModel.countDocuments();
     const totalOrders = await OrderModel.countDocuments();
-    const revinew = await OrderModel.aggregate([
-      {
-        $match: { status: "confirmed" },
-      },
-      {
-        $group: {
-          _id: null,
-          totalRevenue: { $sum: "$totalPrice" },
-        },
-      },
+
+    const revenueResult = await OrderModel.aggregate([
+      { $match: { status: "confirmed" } },
+      { $group: { _id: null, totalRevenue: { $sum: "$totalPrice" } } },
     ]);
-    const totalRevinew = revinew[0].totalRevenue;
+
+    const totalRevenue = revenueResult.length > 0 ? revenueResult[0].totalRevenue : 0;
 
     res.status(200).json({
-      totalUsers,
-      totalProducts,
-      totalOrders,
-      totalRevinew: totalRevinew > 0 ? totalRevinew : 0,
+      success: true,
+      message: "Dashboard stats retrieved successfully",
+      stats: {
+        totalUsers,
+        totalProducts,
+        totalOrders,
+        totalRevenue,
+      },
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
-      message: "failed to get dashboard stats",
-      error,
+      success: false,
+      message: "Failed to get dashboard stats",
+      error: error?.message || error,
     });
   }
 };

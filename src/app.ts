@@ -59,9 +59,9 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
 
 // Dashboard stats
-app.use("/api/stats", statsRoutes);
+app.use("/api/dashboard/stats", statsRoutes);
 
-// Chart data
+//Dashboard Chart data
 app.use("/api/dashboard/chart-data", chartDataRoutes);
 
 // Categories

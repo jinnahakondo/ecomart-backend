@@ -4,14 +4,17 @@ import ProductModel from "../models/ProductModel";
 export const getCategories = async (req: Request, res: Response) => {
   try {
     const categories = await ProductModel.distinct("category");
+
     res.status(200).json({
-      message: "all category retrive successfully",
-      categories,
+      success: true,
+      message: "Categories retrieved successfully",
+      data: categories || [],
     });
   } catch (error: any) {
     res.status(500).json({
-      message: "failed to retrive categories",
-      err: error.message,
+      success: false,
+      message: "Failed to retrieve categories",
+      error: error?.message || error,
     });
   }
 };

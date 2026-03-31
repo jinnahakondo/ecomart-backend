@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import OrderModel from "../models/OrderModel";
+
 export const getChartData = async (req: Request, res: Response) => {
   try {
-    // Order Status distribution (Pie Chart)
+    // Pie Chart: Order Status Distribution
     const statusData = await OrderModel.aggregate([
       {
         $group: {
@@ -12,12 +13,27 @@ export const getChartData = async (req: Request, res: Response) => {
       },
     ]);
 
-    // Monthly Revenue (Bar Chart)
+    // Bar Chart: Monthly Revenue
     const monthlyRevenue = await OrderModel.aggregate([
       { $match: { status: "confirmed" } },
       {
         $group: {
-          _id: { $month: "$createdAt" },
+          _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
+          revenue: { $sum: "$totalPrice" },
+          orders: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ]);
+
+    // Line Chart: Daily Revenue
+    const dailyRevenue = await OrderModel.aggregate([
+      { $match: { status: "confirmed" } },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+          },
           revenue: { $sum: "$totalPrice" },
           orders: { $sum: 1 },
         },
@@ -25,32 +41,20 @@ export const getChartData = async (req: Request, res: Response) => {
       { $sort: { _id: 1 } },
     ]);
 
-    //Daily Revenue (Line Chart)
-    const dailyRevenue = await OrderModel.aggregate([
-      { $match: { status: "confirmed" } },
-      {
-        $group: {
-          _id: {
-            $dateToString: {
-              format: "%Y-%m-%d",
-              date: "$createdAt",
-            },
-          },
-          revenue: { $sum: "$totalPrice" },
-          orders: { $sum: 1 },
-        },
-      },
-    ]);
-
     res.status(200).json({
-      statusData,
-      monthlyRevenue,
-      dailyRevenue,
+      success: true,
+      message: "Chart data retrieved successfully",
+      data: {
+        statusData: statusData || [],
+        monthlyRevenue: monthlyRevenue || [],
+        dailyRevenue: dailyRevenue || [],
+      },
     });
   } catch (error: any) {
     res.status(500).json({
-      message: "failed to get chart data",
-      error: error.message,
+      success: false,
+      message: "Failed to get chart data",
+      error: error?.message || error,
     });
   }
 };

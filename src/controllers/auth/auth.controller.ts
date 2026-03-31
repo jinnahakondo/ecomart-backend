@@ -2,9 +2,10 @@ import { Request, Response } from "express";
 import UserModel from "../../models/UserModel";
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
-const jwtSecrect: string = process.env.JWT_SECRECT!;
 
-//create user
+const jwtSecret: string = process.env.JWT_SECRECT!;
+
+// Create new user
 export const createUser = async (req: Request, res: Response) => {
   try {
     const newUser = req.body;
@@ -12,7 +13,7 @@ export const createUser = async (req: Request, res: Response) => {
     res.status(201).json({
       success: true,
       message: "User created successfully",
-      result: result,
+      result,
     });
   } catch (error: any) {
     res.status(500).json({
@@ -23,23 +24,18 @@ export const createUser = async (req: Request, res: Response) => {
   }
 };
 
-//login user
+// Login user
 export const loginUser = async (req: Request, res: Response) => {
-  const payload = req.body;
-
   try {
-    const user = await UserModel.findOne({ email: payload.email });
-    if (!user) {
-      throw new Error("invalid email address");
-    }
+    const { email, password } = req.body;
 
-    //check password
-    const isPasswordOk = await bcrypt.compare(payload.password, user.password);
-    if (!isPasswordOk) {
-      throw new Error("invalid passwod");
-    }
+    const user = await UserModel.findOne({ email });
+    if (!user) throw new Error("Invalid email address");
 
-    const token = jwt.sign({ _id: user._id }, jwtSecrect);
+    const isPasswordOk = await bcrypt.compare(password, user.password);
+    if (!isPasswordOk) throw new Error("Invalid password");
+
+    const token = jwt.sign({ _id: user._id }, jwtSecret, { expiresIn: "7d" });
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -47,38 +43,29 @@ export const loginUser = async (req: Request, res: Response) => {
       sameSite: "none",
       path: "/",
     });
-    res.status(200).json({
-      success: true,
-    });
+
+    res.status(200).json({ success: true });
   } catch (error: any) {
-    res.status(500).send({ message: error?.message });
+    res.status(500).json({ success: false, message: error?.message });
   }
 };
 
-//get verifyed user info
+// Get authenticated user info
 export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
   try {
     const token = req.cookies.token;
+    if (!token)
+      return res.status(401).json({ success: false, message: "No token provided" });
 
-    const decodedToken = jwt.verify(token, jwtSecrect!) as JwtPayload;
+    const decodedToken = jwt.verify(token, jwtSecret) as JwtPayload;
 
-    if (!decodedToken?._id) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized access",
-      });
-    }
+    if (!decodedToken?._id)
+      return res.status(401).json({ success: false, message: "Unauthorized access" });
 
-    const id = decodedToken._id;
-    const user = await UserModel.findOne({ _id: id }).select("-password");
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await UserModel.findById(decodedToken._id).select("-password");
+    if (!user) throw new Error("User not found");
 
-    res.status(200).json({
-      success: true,
-      user: user,
-    });
+    res.status(200).json({ success: true, user });
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -88,21 +75,22 @@ export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
   }
 };
 
-//logout user
+// Logout user
 export const logOutUser = async (req: Request, res: Response) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
     });
-    res.status(200).json({
-      success: true,
-      message: "User logged out successfully",
-    });
-  } catch (error) {
+
+    res.status(200).json({ success: true, message: "User logged out successfully" });
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to log out user",
+      error: error?.message,
     });
   }
 };
