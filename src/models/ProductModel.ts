@@ -14,6 +14,7 @@ interface IProduct {
   title: string;
   description: string;
   category: string;
+  oldPrice: number;
   price: number;
   discountPercentage: number;
   rating?: number;
@@ -36,6 +37,7 @@ const ProductSchema = new mongoose.Schema<IProduct>(
     title: { type: String, required: true },
     description: { type: String, required: true },
     category: { type: String, required: true },
+    oldPrice: { type: Number, required: true },
     price: { type: Number, required: true },
     discountPercentage: { type: Number, required: true },
     rating: { type: Number },

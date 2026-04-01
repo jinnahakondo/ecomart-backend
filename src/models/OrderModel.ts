@@ -10,7 +10,7 @@ interface IOrder {
   address: {
     fullName: string;
     phone: string;
-    country: string;
+    district: string;
     city: string;
     area: string;
     postalCode: string;
@@ -51,7 +51,7 @@ const OrderSchema = new mongoose.Schema<IOrder>(
     address: {
       fullName: { type: String, required: true },
       phone: { type: String, required: true },
-      country: { type: String, required: true },
+      district: { type: String, required: true },
       city: { type: String, required: true },
       area: { type: String, required: true },
       postalCode: { type: String, required: true },
