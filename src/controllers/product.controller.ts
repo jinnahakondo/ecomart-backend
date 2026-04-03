@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import ProductModel from "../models/ProductModel";
+import { sendSuccess, sendError } from "../utils/responseHandler";
 
 // get all products with optional filters, pagination, sorting
 export const getProduct = async (req: Request, res: Response) => {
@@ -25,17 +26,9 @@ export const getProduct = async (req: Request, res: Response) => {
 
     const products = await mongoQuery.skip(skip).limit(limit);
 
-    res.status(200).json({
-      success: true,
-      message: "Products retrieved successfully",
-      result: products,
-    });
+    return sendSuccess(res, "Products retrieved successfully", products, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Error retrieving products",
-      error: error.message,
-    });
+    return sendError(res, "Error retrieving products", 500);
   }
 };
 
@@ -45,23 +38,12 @@ export const getSingleProduct = async (req: Request, res: Response) => {
   try {
     const product = await ProductModel.findById(serviceId);
     if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
-      });
+      return sendError(res, "Product not found", 404);
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Product fetched successfully",
-      result: product,
-    });
+    return sendSuccess(res, "Product fetched successfully", product, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch product",
-      error: error.message,
-    });
+    return sendError(res, "Failed to fetch product", 500);
   }
 };
 
@@ -70,17 +52,9 @@ export const createProduct = async (req: Request, res: Response) => {
   try {
     const newProduct = req.body;
     const result = await ProductModel.create(newProduct);
-    res.status(201).json({
-      success: true,
-      message: "Product created successfully",
-      result,
-    });
+    return sendSuccess(res, "Product created successfully", result, 201);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to create product",
-      error: error.message,
-    });
+    return sendError(res, "Failed to create product", 500);
   }
 };
 
@@ -90,17 +64,9 @@ export const updateProduct = async (req: Request, res: Response) => {
   const updateData = req.body;
   try {
     const result = await ProductModel.updateOne({ _id: serviceId }, updateData);
-    res.status(200).json({
-      success: true,
-      message: "Product updated successfully",
-      result,
-    });
+    return sendSuccess(res, "Product updated successfully", result, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to update product",
-      error: error.message,
-    });
+    return sendError(res, "Failed to update product", 500);
   }
 };
 
@@ -110,22 +76,11 @@ export const deleteAProduct = async (req: Request, res: Response) => {
   try {
     const result = await ProductModel.deleteOne({ _id: serviceId });
     if (result.deletedCount === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
-      });
+      return sendError(res, "Product not found", 404);
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Product deleted successfully",
-      result,
-    });
+    return sendSuccess(res, "Product deleted successfully", result, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete product",
-      error: error.message,
-    });
+    return sendError(res, "Failed to delete product", 500);
   }
 };

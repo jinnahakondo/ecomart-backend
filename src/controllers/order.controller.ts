@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import OrderModel from "../models/OrderModel";
+import { sendSuccess, sendError } from "../utils/responseHandler";
 
 // get all orders
 export const getOrder = async (req: Request, res: Response) => {
@@ -8,17 +9,9 @@ export const getOrder = async (req: Request, res: Response) => {
       "productId",
       "title thumbnail",
     );
-    res.status(200).json({
-      success: true,
-      message: "Orders retrieved successfully",
-      result: orders,
-    });
+    return sendSuccess(res, "Orders retrieved successfully", orders, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to retrieve orders",
-      error: error.message,
-    });
+    return sendError(res, "Failed to retrieve orders", 500);
   }
 };
 
@@ -28,23 +21,12 @@ export const getSingleOrder = async (req: Request, res: Response) => {
   try {
     const order = await OrderModel.findById(id);
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
+      return sendError(res, "Order not found", 404);
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Order retrieved successfully",
-      result: order,
-    });
+    return sendSuccess(res, "Order retrieved successfully", order, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to retrieve order",
-      error: error.message,
-    });
+    return sendError(res, "Failed to retrieve order", 500);
   }
 };
 
@@ -54,23 +36,12 @@ export const getOrderForAUser = async (req: Request, res: Response) => {
   try {
     const orders = await OrderModel.find({ userId }).populate("productId");
     if (!orders || orders.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No orders found for this user",
-      });
+      return sendError(res, "No orders found for this user", 404);
     }
 
-    res.status(200).json({
-      success: true,
-      message: "User orders retrieved successfully",
-      result: orders,
-    });
+    return sendSuccess(res, "User orders retrieved successfully", orders, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to retrieve user orders",
-      error: error.message,
-    });
+    return sendError(res, "Failed to retrieve user orders", 500);
   }
 };
 
@@ -79,17 +50,9 @@ export const createOrder = async (req: Request, res: Response) => {
   try {
     const newOrder = req.body;
     const result = await OrderModel.create(newOrder);
-    res.status(201).json({
-      success: true,
-      message: "Order created successfully",
-      result,
-    });
+    return sendSuccess(res, "Order created successfully", result, 201);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to create order",
-      error: error.message,
-    });
+    return sendError(res, "Failed to create order", 500);
   }
 };
 
@@ -99,17 +62,9 @@ export const updateOrder = async (req: Request, res: Response) => {
   const updateData = req.body;
   try {
     const result = await OrderModel.updateOne({ _id: id }, updateData);
-    res.status(200).json({
-      success: true,
-      message: "Order updated successfully",
-      result,
-    });
+    return sendSuccess(res, "Order updated successfully", result, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to update order",
-      error: error.message,
-    });
+    return sendError(res, "Failed to update order", 500);
   }
 };
 
@@ -119,22 +74,11 @@ export const deleteOrder = async (req: Request, res: Response) => {
   try {
     const result = await OrderModel.deleteOne({ _id: id });
     if (result.deletedCount === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
+      return sendError(res, "Order not found", 404);
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Order deleted successfully",
-      result,
-    });
+    return sendSuccess(res, "Order deleted successfully", result, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete order",
-      error: error.message,
-    });
+    return sendError(res, "Failed to delete order", 500);
   }
 };

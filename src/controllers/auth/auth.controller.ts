@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import UserModel from "../../models/UserModel";
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { sendSuccess, sendError } from "../../utils/responseHandler";
 
 const jwtSecret: string = process.env.JWT_SECRECT!;
 
@@ -10,17 +11,9 @@ export const createUser = async (req: Request, res: Response) => {
   try {
     const newUser = req.body;
     const result = await UserModel.create(newUser);
-    res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      result,
-    });
+    return sendSuccess(res, "User created successfully", result, 201);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to create user",
-      error: error.message,
-    });
+    return sendError(res, "Failed to create user", 500);
   }
 };
 
@@ -44,12 +37,9 @@ export const loginUser = async (req: Request, res: Response) => {
       path: "/",
     });
 
-    res.status(200).json({
-      success: true,
-      user: { name: user.name, avatar: user.avatar, role: user.role },
-    });
+    return sendSuccess(res, "Login successful", { name: user.name, avatar: user.avatar, role: user.role }, 200);
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error?.message });
+    return sendError(res, error?.message || "Login failed", 500);
   }
 };
 
@@ -59,27 +49,19 @@ export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
   try {
     const token = req.cookies.token;
     if (!token)
-      return res
-        .status(401)
-        .json({ success: false, message: "No token provided" });
+      return sendError(res, "No token provided", 401);
 
     const decodedToken = jwt.verify(token, jwtSecret) as JwtPayload;
 
     if (!decodedToken?._id)
-      return res
-        .status(401)
-        .json({ success: false, message: "Unauthorized access" });
+      return sendError(res, "Unauthorized access", 401);
 
     const user = await UserModel.findById(decodedToken._id).select("-password");
     if (!user) throw new Error("User not found");
 
-    res.status(200).json({ success: true, user });
+    return sendSuccess(res, "User info fetched successfully", user, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch user info",
-      error: error?.message,
-    });
+    return sendError(res, "Failed to fetch user info", 500);
   }
 };
 
@@ -93,14 +75,8 @@ export const logOutUser = async (req: Request, res: Response) => {
       path: "/",
     });
 
-    res
-      .status(200)
-      .json({ success: true, message: "User logged out successfully" });
+    return sendSuccess(res, "User logged out successfully", {}, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to log out user",
-      error: error?.message,
-    });
+    return sendError(res, "Failed to log out user", 500);
   }
 };

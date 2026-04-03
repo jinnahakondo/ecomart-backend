@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import OrderModel from "../models/OrderModel";
+import { sendSuccess, sendError } from "../utils/responseHandler";
 
 export const getChartData = async (req: Request, res: Response) => {
   try {
@@ -41,20 +42,12 @@ export const getChartData = async (req: Request, res: Response) => {
       { $sort: { _id: 1 } },
     ]);
 
-    res.status(200).json({
-      success: true,
-      message: "Chart data retrieved successfully",
-      data: {
-        statusData: statusData || [],
-        monthlyRevenue: monthlyRevenue || [],
-        dailyRevenue: dailyRevenue || [],
-      },
-    });
+    return sendSuccess(res, "Chart data retrieved successfully", {
+      statusData: statusData || [],
+      monthlyRevenue: monthlyRevenue || [],
+      dailyRevenue: dailyRevenue || [],
+    }, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to get chart data",
-      error: error?.message || error,
-    });
+    return sendError(res, "Failed to get chart data", 500);
   }
 };

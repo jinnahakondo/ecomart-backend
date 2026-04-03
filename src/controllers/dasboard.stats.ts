@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import UserModel from "../models/UserModel";
 import ProductModel from "../models/ProductModel";
 import OrderModel from "../models/OrderModel";
+import { sendSuccess, sendError } from "../utils/responseHandler";
 
 export const getStats = async (req: Request, res: Response) => {
   try {
@@ -16,21 +17,13 @@ export const getStats = async (req: Request, res: Response) => {
 
     const totalRevenue = revenueResult.length > 0 ? revenueResult[0].totalRevenue : 0;
 
-    res.status(200).json({
-      success: true,
-      message: "Dashboard stats retrieved successfully",
-      stats: {
-        totalUsers,
-        totalProducts,
-        totalOrders,
-        totalRevenue,
-      },
-    });
+    return sendSuccess(res, "Dashboard stats retrieved successfully", {
+      totalUsers,
+      totalProducts,
+      totalOrders,
+      totalRevenue,
+    }, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to get dashboard stats",
-      error: error?.message || error,
-    });
+    return sendError(res, "Failed to get dashboard stats", 500);
   }
 };

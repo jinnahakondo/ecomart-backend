@@ -1,21 +1,14 @@
 import { Request, Response } from "express";
 import UserModel from "../models/UserModel";
+import { sendSuccess, sendError } from "../utils/responseHandler";
 
 // get all users
 export const getUser = async (req: Request, res: Response) => {
   try {
     const users = await UserModel.find();
-    res.status(200).json({
-      success: true,
-      message: "Users fetched successfully",
-      result: users,
-    });
+    return sendSuccess(res, "Users fetched successfully", users, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch users",
-      error: error.message,
-    });
+    return sendError(res, "Failed to fetch users", 500);
   }
 };
 
@@ -25,23 +18,12 @@ export const getSingleUser = async (req: Request, res: Response) => {
   try {
     const user = await UserModel.findById(id);
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      return sendError(res, "User not found", 404);
     }
 
-    res.status(200).json({
-      success: true,
-      message: "User fetched successfully",
-      result: user,
-    });
+    return sendSuccess(res, "User fetched successfully", user, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch user",
-      error: error.message,
-    });
+    return sendError(res, "Failed to fetch user", 500);
   }
 };
 
@@ -51,23 +33,12 @@ export const getSingleUserWithEmail = async (req: Request, res: Response) => {
   try {
     const user = await UserModel.findOne({ email });
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      return sendError(res, "User not found", 404);
     }
 
-    res.status(200).json({
-      success: true,
-      message: "User fetched successfully",
-      result: user,
-    });
+    return sendSuccess(res, "User fetched successfully", user, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch user",
-      error: error.message,
-    });
+    return sendError(res, "Failed to fetch user", 500);
   }
 };
 
@@ -77,17 +48,9 @@ export const updateUser = async (req: Request, res: Response) => {
   const updatedData = req.body;
   try {
     const result = await UserModel.updateOne({ _id: id }, updatedData);
-    res.status(200).json({
-      success: true,
-      message: "User updated successfully",
-      result,
-    });
+    return sendSuccess(res, "User updated successfully", result, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to update user",
-      error: error.message,
-    });
+    return sendError(res, "Failed to update user", 500);
   }
 };
 
@@ -96,16 +59,8 @@ export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const result = await UserModel.deleteOne({ _id: id });
-    res.status(200).json({
-      success: true,
-      message: "User deleted successfully",
-      result,
-    });
+    return sendSuccess(res, "User deleted successfully", result, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete user",
-      error: error.message,
-    });
+    return sendError(res, "Failed to delete user", 500);
   }
 };

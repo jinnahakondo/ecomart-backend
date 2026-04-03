@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import ReviewModel from "../models/ReviewModel";
+import { sendSuccess, sendError } from "../utils/responseHandler";
 
 // get reviews by email
 export const getReviews = async (req: Request, res: Response) => {
@@ -7,23 +8,12 @@ export const getReviews = async (req: Request, res: Response) => {
   try {
     const reviews = await ReviewModel.find({ email });
     if (!reviews || reviews.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Reviews not found",
-      });
+      return sendError(res, "Reviews not found", 404);
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Reviews fetched successfully",
-      result: reviews,
-    });
+    return sendSuccess(res, "Reviews fetched successfully", reviews, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to get reviews",
-      error: error.message,
-    });
+    return sendError(res, "Failed to get reviews", 500);
   }
 };
 
@@ -32,17 +22,9 @@ export const createReview = async (req: Request, res: Response) => {
   try {
     const newReview = req.body;
     const result = await ReviewModel.create(newReview);
-    res.status(201).json({
-      success: true,
-      message: "Review created successfully",
-      result,
-    });
+    return sendSuccess(res, "Review created successfully", result, 201);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to create review",
-      error: error.message,
-    });
+    return sendError(res, "Failed to create review", 500);
   }
 };
 
@@ -52,22 +34,11 @@ export const deleteReview = async (req: Request, res: Response) => {
   try {
     const result = await ReviewModel.deleteOne({ _id: id });
     if (result.deletedCount === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Review not found",
-      });
+      return sendError(res, "Review not found", 404);
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Review deleted successfully",
-      result,
-    });
+    return sendSuccess(res, "Review deleted successfully", result, 200);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete review",
-      error: error.message,
-    });
+    return sendError(res, "Failed to delete review", 500);
   }
 }; 
