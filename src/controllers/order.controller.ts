@@ -4,7 +4,7 @@ import OrderModel from "../models/OrderModel";
 // get all orders
 export const getOrder = async (req: Request, res: Response) => {
   try {
-    const orders = await OrderModel.find();
+    const orders = await OrderModel.find().populate("productId");
     res.status(200).json({
       success: true,
       message: "Orders retrieved successfully",
@@ -49,7 +49,7 @@ export const getSingleOrder = async (req: Request, res: Response) => {
 export const getOrderForAUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
   try {
-    const orders = await OrderModel.find({ userId });
+    const orders = await OrderModel.find({ userId }).populate("productId");
     if (!orders || orders.length === 0) {
       return res.status(404).json({
         success: false,
