@@ -41,4 +41,4 @@ export const deleteReview = async (req: Request, res: Response) => {
   } catch (error: any) {
     return sendError(res, "Failed to delete review", 500);
   }
-}; 
+};

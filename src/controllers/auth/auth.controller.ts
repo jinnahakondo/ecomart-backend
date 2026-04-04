@@ -10,7 +10,9 @@ const jwtSecret: string = process.env.JWT_SECRECT!;
 export const createUser = async (req: Request, res: Response) => {
   try {
     const newUser = req.body;
+    console.log(newUser);
     const result = await UserModel.create(newUser);
+    console.log(result);
     return sendSuccess(res, "User created successfully", result, 201);
   } catch (error: any) {
     return sendError(res, "Failed to create user", 500);
@@ -37,7 +39,12 @@ export const loginUser = async (req: Request, res: Response) => {
       path: "/",
     });
 
-    return sendSuccess(res, "Login successful", { name: user.name, avatar: user.avatar, role: user.role }, 200);
+    return sendSuccess(
+      res,
+      "Login successful",
+      { name: user.name, avatar: user.avatar, role: user.role },
+      200,
+    );
   } catch (error: any) {
     return sendError(res, error?.message || "Login failed", 500);
   }
@@ -45,16 +52,13 @@ export const loginUser = async (req: Request, res: Response) => {
 
 // Get authenticated user info
 export const getAuthenticateUserInfo = async (req: Request, res: Response) => {
-
   try {
     const token = req.cookies.token;
-    if (!token)
-      return sendError(res, "No token provided", 401);
+    if (!token) return sendError(res, "No token provided", 401);
 
     const decodedToken = jwt.verify(token, jwtSecret) as JwtPayload;
 
-    if (!decodedToken?._id)
-      return sendError(res, "Unauthorized access", 401);
+    if (!decodedToken?._id) return sendError(res, "Unauthorized access", 401);
 
     const user = await UserModel.findById(decodedToken._id).select("-password");
     if (!user) throw new Error("User not found");
