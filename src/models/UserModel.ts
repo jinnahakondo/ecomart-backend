@@ -6,6 +6,10 @@ export interface IUser {
   email: string;
   password: string;
   avatar?: string;
+  phoneNumber?: number;
+  designation?: string;
+  district?: string;
+  city?: string;
   role: "user" | "admin";
   provider?: "credentials" | "google";
   createdAt: Date;
@@ -28,7 +32,18 @@ const UserSchema = new mongoose.Schema<IUser>(
     password: {
       type: String,
     },
-
+    phoneNumber: {
+      type: Number,
+    },
+    designation: {
+      type: String,
+    },
+    district: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
     avatar: {
       type: String,
       default:
