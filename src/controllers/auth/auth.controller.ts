@@ -10,10 +10,15 @@ const jwtSecret: string = process.env.JWT_SECRECT!;
 export const createUser = async (req: Request, res: Response) => {
   try {
     const newUser = req.body;
-    console.log(newUser);
     const result = await UserModel.create(newUser);
-    console.log(result);
-    return sendSuccess(res, "User created successfully", result, 201);
+    const data = {
+      _id: result._id,
+      name: result.name,
+      email: result.email,
+      avatar: result.avatar,
+      role: result.role,
+    };
+    return sendSuccess(res, "User created successfully", data, 201);
   } catch (error: any) {
     return sendError(res, "Failed to create user", 500);
   }
