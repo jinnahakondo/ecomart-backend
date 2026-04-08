@@ -34,7 +34,7 @@ export const getSingleOrder = async (req: Request, res: Response) => {
 export const getOrderForAUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
   try {
-    const orders = await OrderModel.find({ userId }).populate("productId");
+    const orders = await OrderModel.find({ userId }).populate("productId", "title thumbnail")
     if (!orders || orders.length === 0) {
       return sendError(res, "No orders found for this user", 404);
     }
