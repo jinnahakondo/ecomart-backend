@@ -6,7 +6,7 @@ interface IOrder {
   quantity: number;
   price: number;
   totalPrice: number;
-  status: "pending" | "confirmed" | "cancelled";
+  status: "pending" | "shipped" | "delivered" | "cancelled";
   address: {
     fullName: string;
     phone: string;
@@ -45,7 +45,7 @@ const OrderSchema = new mongoose.Schema<IOrder>(
     },
     status: {
       type: String,
-      enum: ["pending", "confirmed", "cancelled"],
+      enum: ["pending", "shipped", "delivered", "cancelled"],
       default: "pending",
     },
     address: {

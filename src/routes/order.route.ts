@@ -16,7 +16,7 @@ router.get("/user/:userId", orderController.getOrderForAUser);
 router.post("/", orderController.createOrder);
 
 // update order route
-router.patch("/:id", orderController.updateOrder);
+router.patch("/update/:id", orderController.updateOrder);
 
 //order delete route
 router.delete("/:id", orderController.deleteOrder);
