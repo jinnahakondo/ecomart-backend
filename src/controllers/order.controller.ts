@@ -48,7 +48,8 @@ export const getOrderForAUser = async (req: Request, res: Response) => {
 // create a new order
 export const createOrder = async (req: Request, res: Response) => {
   try {
-    const newOrder = req.body;
+    const body = req.body;
+    const newOrder = { ...body, tracking: { status: "pending" } }
     const result = await OrderModel.create(newOrder);
     return sendSuccess(res, "Order created successfully", result, 201);
   } catch (error: any) {
@@ -59,9 +60,11 @@ export const createOrder = async (req: Request, res: Response) => {
 // update an order
 export const updateOrder = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const updateData = req.body;
+  const status = req.body;
   try {
-    const result = await OrderModel.updateOne({ _id: id }, updateData);
+    const result = await OrderModel.updateOne({ _id: id }, {
+      status, $push: { tracking: { status } }
+    });
     return sendSuccess(res, "Order updated successfully", result, 200);
   } catch (error: any) {
     return sendError(res, "Failed to update order", 500);

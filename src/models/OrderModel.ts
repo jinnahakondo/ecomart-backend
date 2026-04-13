@@ -7,6 +7,12 @@ interface IOrder {
   price: number;
   totalPrice: number;
   status: "pending" | "shipped" | "delivered" | "cancelled";
+  tracking: [
+    {
+      status: string,
+      date: { type: Date }
+    }
+  ]
   address: {
     fullName: string;
     phone: string;
@@ -48,6 +54,15 @@ const OrderSchema = new mongoose.Schema<IOrder>(
       enum: ["pending", "shipped", "delivered", "cancelled"],
       default: "pending",
     },
+    tracking: [
+      {
+        status: String,
+        date: {
+          type: Date,
+          default: Date.now
+        }
+      }
+    ],
     address: {
       fullName: { type: String, required: true },
       phone: { type: String, required: true },
