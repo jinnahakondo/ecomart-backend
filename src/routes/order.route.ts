@@ -3,22 +3,22 @@ import * as orderController from "../controllers/order.controller";
 
 const router = Router();
 
-// get order route
+// get all orders
 router.get("/", orderController.getOrder);
 
-//get a single order route
-router.get("/:id", orderController.getSingleOrder);
-
-//get order for a user route
+// get order for a user (specific first)
 router.get("/user/:userId", orderController.getOrderForAUser);
 
-// create order route
+// get single order
+router.get("/:id", orderController.getSingleOrder);
+
+// create order
 router.post("/", orderController.createOrder);
 
-// update order route
-router.patch("/update/:id", orderController.updateOrder);
+// update order
+router.patch("/:id", orderController.updateOrder);
 
-//order delete route
+// delete order
 router.delete("/:id", orderController.deleteOrder);
 
 export default router;

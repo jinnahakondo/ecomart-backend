@@ -86,7 +86,7 @@ app.get("/", (req: Request, res: Response) => {
     { method: "PATCH", path: "/api/users/:id", description: "Update a user" },
     { method: "DELETE", path: "/api/users/:id", description: "Delete a user" },
 
-    { method: "GET", path: "/api/products", description: "Get products with optional filters", query: ["skip","limit","search","sort","category"] },
+    { method: "GET", path: "/api/products", description: "Get products with optional filters", query: ["skip", "limit", "search", "sort", "category"] },
     { method: "GET", path: "/api/products/:serviceId", description: "Get a single product by ID" },
     { method: "POST", path: "/api/products", description: "Create a new product" },
     { method: "PATCH", path: "/api/products/:serviceId", description: "Update a product" },
