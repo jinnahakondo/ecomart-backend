@@ -2,11 +2,12 @@ import { Request, Response } from "express";
 import ReviewModel from "../models/ReviewModel";
 import { sendSuccess, sendError } from "../utils/responseHandler";
 
-// get reviews by email
+// get reviews by productId
 export const getReviews = async (req: Request, res: Response) => {
-  const { email } = req.params;
+  const { productId } = req.params;
+  console.log(productId);
   try {
-    const reviews = await ReviewModel.find({ email });
+    const reviews = await ReviewModel.find({ productId });
     if (!reviews || reviews.length === 0) {
       return sendError(res, "Reviews not found", 404);
     }
@@ -19,6 +20,7 @@ export const getReviews = async (req: Request, res: Response) => {
 
 // create a new review
 export const createReview = async (req: Request, res: Response) => {
+
   try {
     const newReview = req.body;
     const result = await ReviewModel.create(newReview);

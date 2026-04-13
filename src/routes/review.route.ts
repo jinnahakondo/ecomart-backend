@@ -3,8 +3,8 @@ import * as reviewController from "../controllers/review.controller";
 
 const router = Router();
 
-// get reviews with email route
-router.get("/:email", reviewController.getReviews);
+// get all reviews of a user
+router.get("/:productId", reviewController.getReviews);
 
 // create review route
 router.post("/", reviewController.createReview);

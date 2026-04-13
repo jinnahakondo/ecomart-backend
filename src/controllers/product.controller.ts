@@ -20,7 +20,7 @@ export const getProduct = async (req: Request, res: Response) => {
   if (sort === "dsc") sortOption.rating = -1;
 
   try {
-    let mongoQuery = ProductModel.find(query);
+    let mongoQuery = ProductModel.find(query)
 
     if (sort) mongoQuery = mongoQuery.sort(sortOption);
 
@@ -28,6 +28,8 @@ export const getProduct = async (req: Request, res: Response) => {
 
     return sendSuccess(res, "Products retrieved successfully", products, 200);
   } catch (error: any) {
+
+    console.log(error.message);
     return sendError(res, "Error retrieving products", 500);
   }
 };
