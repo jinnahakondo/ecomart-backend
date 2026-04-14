@@ -24,7 +24,6 @@ interface IProduct {
   weight?: number;
   warrantyInformation?: string;
   availabilityStatus?: string;
-  reviews?: IReview[];
   returnPolicy?: string;
   images?: string[];
   thumbnail?: string;
@@ -47,15 +46,6 @@ const ProductSchema = new mongoose.Schema<IProduct>(
     weight: { type: Number },
     warrantyInformation: { type: String },
     availabilityStatus: { type: String },
-    reviews: [
-      {
-        rating: { type: Number },
-        comment: { type: String },
-        date: { type: Date },
-        reviewerName: { type: String },
-        reviewerEmail: { type: String },
-      },
-    ],
     returnPolicy: { type: String },
     images: {
       type: [String],
