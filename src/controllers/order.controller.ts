@@ -1,15 +1,22 @@
 import { Request, Response } from "express";
 import OrderModel from "../models/OrderModel";
-import { sendSuccess, sendError } from "../utils/responseHandler";
+import { sendSuccess, sendError, calculatePagination } from "../utils/responseHandler";
 
-// get all orders
+// get all orders with pagination
 export const getOrder = async (req: Request, res: Response) => {
   try {
-    const orders = await OrderModel.find().populate(
-      "productId",
-      "title thumbnail",
-    );
-    return sendSuccess(res, "Orders retrieved successfully", orders, 200);
+    const skip = Number(req.query.skip as string) || 0;
+    const limit = Number(req.query.limit as string) || 20;
+
+    const totalOrders = await OrderModel.countDocuments();
+    const orders = await OrderModel.find()
+      .populate("productId", "title thumbnail")
+      .skip(skip)
+      .limit(limit);
+
+    const pagination = calculatePagination(totalOrders, skip, limit);
+
+    return sendSuccess(res, "Orders retrieved successfully", orders, 200, pagination);
   } catch (error: any) {
     return sendError(res, "Failed to retrieve orders", 500);
   }
@@ -30,16 +37,26 @@ export const getSingleOrder = async (req: Request, res: Response) => {
   }
 };
 
-// get orders for a specific user
+// get orders for a specific user with pagination
 export const getOrderForAUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
   try {
-    const orders = await OrderModel.find({ userId }).populate("productId", "title thumbnail")
+    const skip = Number(req.query.skip as string) || 0;
+    const limit = Number(req.query.limit as string) || 20;
+
+    const totalOrders = await OrderModel.countDocuments({ userId });
+    const orders = await OrderModel.find({ userId })
+      .populate("productId", "title thumbnail")
+      .skip(skip)
+      .limit(limit);
+
     if (!orders || orders.length === 0) {
       return sendError(res, "No orders found for this user", 404);
     }
 
-    return sendSuccess(res, "User orders retrieved successfully", orders, 200);
+    const pagination = calculatePagination(totalOrders, skip, limit);
+
+    return sendSuccess(res, "User orders retrieved successfully", orders, 200, pagination);
   } catch (error: any) {
     return sendError(res, "Failed to retrieve user orders", 500);
   }

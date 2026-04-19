@@ -1,5 +1,12 @@
 import { Response } from "express";
 
+interface PaginationMeta {
+  total: number;
+  skip: number;
+  limit: number;
+  page: number;
+}
+
 /*
   Send success response
 */
@@ -7,13 +14,20 @@ export const sendSuccess = (
   res: Response,
   message = "Request successful",
   data: unknown = null,
-  statusCode = 200
+  statusCode = 200,
+  pagination?: PaginationMeta
 ) => {
-  return res.status(statusCode).json({
+  const response: any = {
     success: true,
     message,
     data,
-  });
+  };
+
+  if (pagination) {
+    response.pagination = pagination;
+  }
+
+  return res.status(statusCode).json(response);
 };
 
 /*
@@ -28,4 +42,21 @@ export const sendError = (
     success: false,
     message,
   });
+};
+
+/*
+  Calculate pagination metadata
+*/
+export const calculatePagination = (
+  total: number,
+  skip: number,
+  limit: number
+): PaginationMeta => {
+  const page = Math.floor(skip / limit) + 1;
+  return {
+    total,
+    skip,
+    limit,
+    page,
+  };
 };

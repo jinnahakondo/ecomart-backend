@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import ProductModel from "../models/ProductModel";
-import { sendSuccess, sendError } from "../utils/responseHandler";
+import { sendSuccess, sendError, calculatePagination } from "../utils/responseHandler";
 
 // get all products with optional filters, pagination, sorting
 export const getProduct = async (req: Request, res: Response) => {
   const skip = Number(req.query.skip as string) || 0;
-  const limit = Number(req.query.limit as string) || 30;
+  const limit = Number(req.query.limit as string) || 20;
   const searchText = req.query.search as string;
   const sort = req.query.sort as string;
   const category = req.query.category as string;
@@ -20,15 +20,17 @@ export const getProduct = async (req: Request, res: Response) => {
   if (sort === "dsc") sortOption.rating = -1;
 
   try {
-    let mongoQuery = ProductModel.find(query)
+    const totalProducts = await ProductModel.countDocuments(query);
+    let mongoQuery = ProductModel.find(query);
 
     if (sort) mongoQuery = mongoQuery.sort(sortOption);
 
     const products = await mongoQuery.skip(skip).limit(limit);
 
-    return sendSuccess(res, "Products retrieved successfully", products, 200);
-  } catch (error: any) {
+    const pagination = calculatePagination(totalProducts, skip, limit);
 
+    return sendSuccess(res, "Products retrieved successfully", products, 200, pagination);
+  } catch (error: any) {
     console.log(error.message);
     return sendError(res, "Error retrieving products", 500);
   }

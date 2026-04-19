@@ -1,12 +1,19 @@
 import { Request, Response } from "express";
 import UserModel from "../models/UserModel";
-import { sendSuccess, sendError } from "../utils/responseHandler";
+import { sendSuccess, sendError, calculatePagination } from "../utils/responseHandler";
 
-// get all users
+// get all users with pagination
 export const getUser = async (req: Request, res: Response) => {
   try {
-    const users = await UserModel.find();
-    return sendSuccess(res, "Users fetched successfully", users, 200);
+    const skip = Number(req.query.skip as string) || 0;
+    const limit = Number(req.query.limit as string) || 20;
+
+    const totalUsers = await UserModel.countDocuments();
+    const users = await UserModel.find().skip(skip).limit(limit);
+
+    const pagination = calculatePagination(totalUsers, skip, limit);
+
+    return sendSuccess(res, "Users fetched successfully", users, 200, pagination);
   } catch (error: any) {
     return sendError(res, "Failed to fetch users", 500);
   }

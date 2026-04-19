@@ -1,34 +1,46 @@
 import { Request, Response } from "express";
 import ReviewModel from "../models/ReviewModel";
-import { sendSuccess, sendError } from "../utils/responseHandler";
+import { sendSuccess, sendError, calculatePagination } from "../utils/responseHandler";
 
-// get reviews by productId
+// get reviews by productId with pagination
 export const getReviews = async (req: Request, res: Response) => {
   const { productId } = req.params;
-
   try {
-    const reviews = await ReviewModel.find({ productId });
+    const skip = Number(req.query.skip as string) || 0;
+    const limit = Number(req.query.limit as string) || 20;
+
+    const totalReviews = await ReviewModel.countDocuments({ productId });
+    const reviews = await ReviewModel.find({ productId }).skip(skip).limit(limit);
+
     if (!reviews || reviews.length === 0) {
       return sendError(res, "Reviews not found", 404);
     }
 
-    return sendSuccess(res, "Reviews fetched successfully", reviews, 200);
+    const pagination = calculatePagination(totalReviews, skip, limit);
+
+    return sendSuccess(res, "Reviews fetched successfully", reviews, 200, pagination);
   } catch (error: any) {
     return sendError(res, "Failed to get reviews", 500);
   }
 };
 
-// get reviews by userId for a user 
+// get reviews by userId for a user with pagination
 export const getMyReviews = async (req: Request, res: Response) => {
   const { userId } = req.params;
-
   try {
-    const reviews = await ReviewModel.find({ userId });
+    const skip = Number(req.query.skip as string) || 0;
+    const limit = Number(req.query.limit as string) || 20;
+
+    const totalReviews = await ReviewModel.countDocuments({ userId });
+    const reviews = await ReviewModel.find({ userId }).skip(skip).limit(limit);
+
     if (!reviews || reviews.length === 0) {
       return sendError(res, "Reviews not found", 404);
     }
 
-    return sendSuccess(res, "Reviews fetched successfully", reviews, 200);
+    const pagination = calculatePagination(totalReviews, skip, limit);
+
+    return sendSuccess(res, "Reviews fetched successfully", reviews, 200, pagination);
   } catch (error: any) {
     return sendError(res, "Failed to get reviews", 500);
   }

@@ -10,8 +10,8 @@ const router = Router();
 router.get("/", userController.getUser);
 
 //get a single user
-router.get("/:id", userController.getSingleUser);
 router.get("/email/:email", userController.getSingleUserWithEmail);
+router.get("/:id", userController.getSingleUser);
 
 // update users
 router.patch("/:id", userController.updateUser);
