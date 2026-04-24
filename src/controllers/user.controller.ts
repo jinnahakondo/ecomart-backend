@@ -2,14 +2,27 @@ import { Request, Response } from "express";
 import UserModel from "../models/UserModel";
 import { sendSuccess, sendError, calculatePagination } from "../utils/responseHandler";
 
-// get all users with pagination
+// get all users with pagination and search
 export const getUser = async (req: Request, res: Response) => {
   try {
     const skip = Number(req.query.skip as string) || 0;
     const limit = Number(req.query.limit as string) || 20;
+    const searchText = req.query.search as string;
 
-    const totalUsers = await UserModel.countDocuments();
-    const users = await UserModel.find().skip(skip).limit(limit);
+    const query: any = {};
+    if (searchText) {
+      const regex = { $regex: searchText, $options: "i" };
+      query.$or = [
+        { name: regex },
+        { email: regex },
+        { city: regex },
+        { district: regex },
+        { designation: regex },
+      ];
+    }
+
+    const totalUsers = await UserModel.countDocuments(query);
+    const users = await UserModel.find(query).skip(skip).limit(limit);
 
     const pagination = calculatePagination(totalUsers, skip, limit);
 

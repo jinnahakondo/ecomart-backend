@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import ProductModel from "../models/ProductModel";
 import { sendSuccess, sendError, calculatePagination } from "../utils/responseHandler";
 
-// get all products with optional filters, pagination, sorting
+// get all products with optional filters, search, pagination, sorting
 export const getProduct = async (req: Request, res: Response) => {
   const skip = Number(req.query.skip as string) || 0;
   const limit = Number(req.query.limit as string) || 20;
@@ -12,7 +12,17 @@ export const getProduct = async (req: Request, res: Response) => {
 
   const query: any = {};
 
-  if (searchText) query.title = { $regex: searchText, $options: "i" };
+  if (searchText) {
+    const regex = { $regex: searchText, $options: "i" };
+    query.$or = [
+      { title: regex },
+      { description: regex },
+      { category: regex },
+      { brand: regex },
+      { tags: regex },
+    ];
+  }
+
   if (category) query.category = { $regex: category, $options: "i" };
 
   let sortOption: any = {};

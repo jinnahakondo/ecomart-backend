@@ -2,15 +2,26 @@ import { Request, Response } from "express";
 import ReviewModel from "../models/ReviewModel";
 import { sendSuccess, sendError, calculatePagination } from "../utils/responseHandler";
 
-// get reviews by productId with pagination
+// get reviews by productId with pagination and search
 export const getReviews = async (req: Request, res: Response) => {
   const { productId } = req.params;
   try {
     const skip = Number(req.query.skip as string) || 0;
     const limit = Number(req.query.limit as string) || 20;
+    const searchText = req.query.search as string;
 
-    const totalReviews = await ReviewModel.countDocuments({ productId });
-    const reviews = await ReviewModel.find({ productId }).skip(skip).limit(limit);
+    const query: any = { productId };
+    if (searchText) {
+      const regex = { $regex: searchText, $options: "i" };
+      query.$or = [
+        { reviewerName: regex },
+        { email: regex },
+        { comment: regex },
+      ];
+    }
+
+    const totalReviews = await ReviewModel.countDocuments(query);
+    const reviews = await ReviewModel.find(query).skip(skip).limit(limit);
 
     if (!reviews || reviews.length === 0) {
       return sendError(res, "Reviews not found", 404);
@@ -24,15 +35,26 @@ export const getReviews = async (req: Request, res: Response) => {
   }
 };
 
-// get reviews by userId for a user with pagination
+// get reviews by userId for a user with pagination and search
 export const getMyReviews = async (req: Request, res: Response) => {
   const { userId } = req.params;
   try {
     const skip = Number(req.query.skip as string) || 0;
     const limit = Number(req.query.limit as string) || 20;
+    const searchText = req.query.search as string;
 
-    const totalReviews = await ReviewModel.countDocuments({ userId });
-    const reviews = await ReviewModel.find({ userId }).skip(skip).limit(limit);
+    const query: any = { userId };
+    if (searchText) {
+      const regex = { $regex: searchText, $options: "i" };
+      query.$or = [
+        { reviewerName: regex },
+        { email: regex },
+        { comment: regex },
+      ];
+    }
+
+    const totalReviews = await ReviewModel.countDocuments(query);
+    const reviews = await ReviewModel.find(query).skip(skip).limit(limit);
 
     if (!reviews || reviews.length === 0) {
       return sendError(res, "Reviews not found", 404);

@@ -2,14 +2,27 @@ import { Request, Response } from "express";
 import OrderModel from "../models/OrderModel";
 import { sendSuccess, sendError, calculatePagination } from "../utils/responseHandler";
 
-// get all orders with pagination
+// get all orders with pagination and search
 export const getOrder = async (req: Request, res: Response) => {
   try {
     const skip = Number(req.query.skip as string) || 0;
     const limit = Number(req.query.limit as string) || 20;
+    const searchText = req.query.search as string;
 
-    const totalOrders = await OrderModel.countDocuments();
-    const orders = await OrderModel.find()
+    const query: any = {};
+    if (searchText) {
+      const regex = { $regex: searchText, $options: "i" };
+      query.$or = [
+        { status: regex },
+        { "address.fullName": regex },
+        { "address.city": regex },
+        { "address.district": regex },
+        { "address.area": regex },
+      ];
+    }
+
+    const totalOrders = await OrderModel.countDocuments(query);
+    const orders = await OrderModel.find(query)
       .populate("productId", "title thumbnail")
       .skip(skip)
       .limit(limit);
@@ -37,15 +50,28 @@ export const getSingleOrder = async (req: Request, res: Response) => {
   }
 };
 
-// get orders for a specific user with pagination
+// get orders for a specific user with pagination and search
 export const getOrderForAUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
   try {
     const skip = Number(req.query.skip as string) || 0;
     const limit = Number(req.query.limit as string) || 20;
+    const searchText = req.query.search as string;
 
-    const totalOrders = await OrderModel.countDocuments({ userId });
-    const orders = await OrderModel.find({ userId })
+    const query: any = { userId };
+    if (searchText) {
+      const regex = { $regex: searchText, $options: "i" };
+      query.$or = [
+        { status: regex },
+        { "address.fullName": regex },
+        { "address.city": regex },
+        { "address.district": regex },
+        { "address.area": regex },
+      ];
+    }
+
+    const totalOrders = await OrderModel.countDocuments(query);
+    const orders = await OrderModel.find(query)
       .populate("productId", "title thumbnail")
       .skip(skip)
       .limit(limit);
