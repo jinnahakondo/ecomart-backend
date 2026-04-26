@@ -64,11 +64,28 @@ export const getSingleProduct = async (req: Request, res: Response) => {
 // create a new product
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const newProduct = req.body;
+    const data = req.body;
+
+    const oldPrice = Number(data.oldPrice);
+    const price = Number(data.price);
+
+    let discountPercentage = 0;
+
+    if (oldPrice > 0 && price >= 0 && oldPrice >= price) {
+      const discount = oldPrice - price;
+      discountPercentage = (discount / oldPrice) * 100;
+    }
+
+    const newProduct = {
+      ...data,
+      discountPercentage: Number(discountPercentage.toFixed(2)),
+    };
+
     const result = await ProductModel.create(newProduct);
+
     return sendSuccess(res, "Product created successfully", result, 201);
   } catch (error: any) {
-    return sendError(res, "Failed to create product", 500);
+    return sendError(res, `${error.message} | Failed to create product`, 500);
   }
 };
 

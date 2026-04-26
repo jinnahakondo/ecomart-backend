@@ -1,14 +1,5 @@
 import mongoose from "mongoose";
 
-// reviews interface
-interface IReview {
-  rating: number;
-  comment: string;
-  date: Date;
-  reviewerName: string;
-  reviewerEmail: string;
-}
-
 // main product interface
 interface IProduct {
   title: string;
