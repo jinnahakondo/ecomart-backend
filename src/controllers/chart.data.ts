@@ -16,7 +16,7 @@ export const getChartData = async (req: Request, res: Response) => {
 
     // Bar Chart: Monthly Revenue
     const monthlyRevenue = await OrderModel.aggregate([
-      { $match: { status: "confirmed" } },
+      { $match: { status: "delivered" } },
       {
         $group: {
           _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },
@@ -29,7 +29,7 @@ export const getChartData = async (req: Request, res: Response) => {
 
     // Line Chart: Daily Revenue
     const dailyRevenue = await OrderModel.aggregate([
-      { $match: { status: "confirmed" } },
+      { $match: { status: "delivered" } },
       {
         $group: {
           _id: {
